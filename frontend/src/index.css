@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-deepblack: #0b0b0f;
+  --color-neonviolet: #7c3aed;
+  --color-cyberpurple: #9333ea;
+  --color-glow: #a855f7;
+  --font-cyber: "Courier New", Courier, monospace;
+  --font-display: Orbitron, sans-serif;
+  --shadow-neon: 0 0 10px #7c3aed, 0 0 20px #9333ea;
+}
+
+
+@layer base {
+  body {
+    @apply bg-deepblack text-gray-200 font-cyber m-0 p-0 overflow-x-hidden;
+  }
+}
+
+@layer components {
+  .cyber-button {
+    @apply bg-transparent border-2 border-[var(--color-neonviolet)] text-[var(--color-neonviolet)] px-6 py-2 uppercase tracking-wider font-bold transition-all duration-300 hover:bg-[var(--color-neonviolet)] hover:text-white hover:shadow-[var(--shadow-neon)] focus:outline-none focus:ring-2 focus:ring-[var(--color-glow)];
+  }
+
+  .glass-panel {
+    @apply bg-white/10 backdrop-filter backdrop-blur-lg border border-[var(--color-neonviolet)]/30 rounded-lg shadow-lg;
+  }
+}
+
+/* Custom Selection */
+::selection {
+  @apply bg-neonviolet text-white;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-deepblack;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neonviolet rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-glow;
+}
