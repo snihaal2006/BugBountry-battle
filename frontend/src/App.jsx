@@ -10,7 +10,7 @@ import AdminDisqualified from './pages/AdminDisqualified';
 import AdminMonitor from './pages/AdminMonitor';
 
 // Set up axios base URL
-axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // ProtectedRoute MUST be defined OUTSIDE App so React never treats it as a new component type on re-renders
 const ProtectedRoute = ({ team, children }) => {
