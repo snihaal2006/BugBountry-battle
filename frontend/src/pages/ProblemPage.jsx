@@ -265,12 +265,16 @@ const ProblemPage = ({ team }) => {
                     code,
                     language
                 });
-                const status = res.data.result;
+                const status = res.data.actual_status || res.data.result;
                 if (status === 'Accepted') {
                     setOutput('[+] TARGET COMPROMISED: Solution Accepted! +100 Points');
                     setShowSuccess(true);
                 } else {
-                    setOutput(`[-] VALIDATION FAILED: ${status}`);
+                    let out = `[-] VALIDATION FAILED: ${status}`;
+                    if (res.data.error_output) {
+                        out += `\n\n[ERROR DETAILS]\n${res.data.error_output}`;
+                    }
+                    setOutput(out);
                 }
             } catch (err) {
                 setOutput(`[!] Error: ${err.response?.data?.message || err.message}`);

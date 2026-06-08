@@ -72,6 +72,7 @@ exports.submitCode = async (req, res) => {
 
         let allPassed = true;
         let failedTestCase = null;
+        let errorOutput = null;
 
         for (let testCase of testCases) {
             const apiUrl = USE_RAPIDAPI ? JUDGE0_URL : FREE_JUDGE0_URL;
@@ -87,23 +88,30 @@ exports.submitCode = async (req, res) => {
             if (status !== 3) {
                 allPassed = false;
                 failedTestCase = response.data.status.description;
+                errorOutput = response.data.compile_output || response.data.stderr || null;
                 break;
             }
         }
 
-        const finalResult = allPassed ? 'Accepted' : failedTestCase;
+        let dbResult = allPassed ? 'Accepted' : failedTestCase;
+        const allowedResults = ['Pending', 'Accepted', 'Wrong Answer', 'Runtime Error', 'Time Limit Exceeded'];
+        if (!allPassed && !allowedResults.includes(dbResult)) {
+            dbResult = 'Runtime Error';
+        }
 
-        const { data: submission } = await supabase
+        const { data: submission, error: subError } = await supabase
             .from('submissions')
             .insert([{
                 team_id: teamId,
                 problem_id: problemId,
                 code,
                 language,
-                result: finalResult
+                result: dbResult
             }])
             .select()
             .single();
+
+        if (subError) throw subError;
 
         if (allPassed) {
             const { data: team } = await supabase.from('teams').select('score, problems_solved').eq('id', teamId).single();
@@ -122,7 +130,11 @@ exports.submitCode = async (req, res) => {
             }
         }
 
-        res.json(submission);
+        res.json({
+            ...submission,
+            actual_status: failedTestCase,
+            error_output: errorOutput
+        });
     } catch (err) {
         res.status(500).json({ message: 'Error during submission', error: err.message });
     }
